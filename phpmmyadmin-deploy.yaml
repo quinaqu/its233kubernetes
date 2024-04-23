@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: phpmyadmin
+        image: bitnami/phpmyadmin:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-configmap
+              key: database_url
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-service
+spec:
+  selector:
+    app: mariadb
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30100
