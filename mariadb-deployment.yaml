@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,23 +17,20 @@ spec:
       - name: mariadb
         image: mariadb
         ports:
-        - containerPort: 3306 
+          - containerPort: 3306
         env:
           - name: MARIADB_ROOT_PASSWORD
-            valuefrom:
-              secretkeyref:
-                name: mariadb-secret
+            valueFrom:
+              secretKeyRef:
                 key: maria-root-password
+                name: mariadb-secret      
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: mariadb-internal-service
 spec:
+  ports:
+  - port: 3306
   selector:
     app: mariadb
-  ports:
-    - protocol: TCP
-      port: 3306
-      targetPort: 3306
